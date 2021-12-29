@@ -4,8 +4,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class GameXO {
-    public static int SIZE =5;
-    public static int DOTS_TO_WIN = 5;
+    public static int SIZE = 4;
+    public static int DOTS_TO_WIN = 3;
     public static final char DOT_EMPTY = '•';
     public static final char DOT_X = 'X';
     public static final char DOT_O = 'O';
@@ -42,62 +42,47 @@ public class GameXO {
     }
 
     public static boolean checkWin(char symb) {
-        boolean winHorizontal, winVertical, winRightDiagonal, winLeftDiagonal;
-        winRightDiagonal = true;
-        winLeftDiagonal = true;
+        int matchHorizontalCount, matchVerticalCount, matchRightDiagonalCount, matchLeftDiagonalCount;
+        matchRightDiagonalCount = 0;
+        matchLeftDiagonalCount = 0;
         for (int i = 0; i < map.length; i++) {
-            winHorizontal = true;
-            winVertical = true;
+            matchHorizontalCount = 0;
+            matchVerticalCount = 0;
 
             for (int j = 0; j < map.length; j++) {
-                if (map[i][j] != symb) {
-                    winHorizontal = false;
-                }
+                if (map[i][j] == symb)
+                    matchHorizontalCount++;
+                else if (matchHorizontalCount < DOTS_TO_WIN)
+                    matchHorizontalCount = 0;
 
-                if (map[j][i] != symb) {
-                    winVertical = false;
-                }
+                if (map[j][i] == symb)
+                    matchVerticalCount++;
+                else if (matchVerticalCount < DOTS_TO_WIN)
+                    matchVerticalCount = 0;
 
-                if ((i == j) && (map[i][j] != symb))
-                    winRightDiagonal = false;
+                if (i == j)
+                    if (map[i][j] == symb)
+                        matchRightDiagonalCount++;
+                    else if (matchRightDiagonalCount < DOTS_TO_WIN)
+                        matchRightDiagonalCount = 0;
 
-                if ((i == map.length - 1 - j) && (map[i][j] != symb))
-                    winLeftDiagonal = false;
+                if (i == map.length - 1 - j)
+                    if (map[i][j] == symb)
+                        matchLeftDiagonalCount++;
+                    else if (matchLeftDiagonalCount < DOTS_TO_WIN)
+                        matchLeftDiagonalCount = 0;
 
-                if ((j == map.length - 1) && (winHorizontal || winVertical)) {
+                if ((j == map.length - 1) && ((matchHorizontalCount >= DOTS_TO_WIN) || (matchVerticalCount >= DOTS_TO_WIN))) {
                     return true;
                 }
 
             }
-            if ((i == map.length - 1) && (winRightDiagonal || winLeftDiagonal)) {
+            if ((i == map.length - 1) && ((matchRightDiagonalCount >= DOTS_TO_WIN) || (matchLeftDiagonalCount >= DOTS_TO_WIN))) {
                 return true;
             }
         }
         return false;
     }
-
-//        for (int i = 0; i < map.length; i++) {
-//            for (int j = 0; j < map.length; j++) {
-//                if (map[j][i] != symb) {
-//                    break;
-//                }
-//                if (j== map.length-1) {
-//                    return true;
-//                }
-//            }
-//        }
-
-
-//        if (map[0][0] == symb && map[0][1] == symb && map[0][2] == symb) return true;
-//        if (map[1][0] == symb && map[1][1] == symb && map[1][2] == symb) return true;
-//        if (map[2][0] == symb && map[2][1] == symb && map[2][2] == symb) return true;
-//        if (map[0][0] == symb && map[1][0] == symb && map[2][0] == symb) return true;
-//        if (map[0][1] == symb && map[1][1] == symb && map[2][1] == symb) return true;
-//        if (map[0][2] == symb && map[1][2] == symb && map[2][2] == symb) return true;
-//        if (map[0][0] == symb && map[1][1] == symb && map[2][2] == symb) return true;
-//        if (map[2][0] == symb && map[1][1] == symb && map[0][2] == symb) return true;
-//        return false;
-    // }
 
     public static boolean isMapFull() {
         for (int i = 0; i < SIZE; i++) {
@@ -130,7 +115,8 @@ public class GameXO {
 
     public static boolean isCellValid(int x, int y) {
         if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return false;
-        if (map[y][x] == DOT_EMPTY) return true;
+        if (map[y][x] == DOT_EMPTY)
+            return true;
         return false;
     }
 
