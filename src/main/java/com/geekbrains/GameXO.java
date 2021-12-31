@@ -1,7 +1,6 @@
 package com.geekbrains;
 
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameXO {
     public static int SIZE = 4;
@@ -124,84 +123,78 @@ public class GameXO {
         return true;
     }
 
-    public static PairLineCount aiChooseLine() {
-        if (maxMatchHorizontalCount.count>maxMatchVerticalCount.count && maxMatchHorizontalCount.count>maxMatchRightDiagonalCount.count && maxMatchHorizontalCount.count>maxMatchLeftDiagonalCount.count) {
-            return maxMatchHorizontalCount;
-        } else
-            if (maxMatchVerticalCount.count>maxMatchHorizontalCount.count && maxMatchVerticalCount.count>maxMatchRightDiagonalCount.count && maxMatchVerticalCount.count>maxMatchLeftDiagonalCount.count) {
-                return maxMatchVerticalCount;
-            } else
-                if (maxMatchRightDiagonalCount.count>maxMatchVerticalCount.count && maxMatchRightDiagonalCount.count>maxMatchHorizontalCount.count && maxMatchRightDiagonalCount.count>maxMatchLeftDiagonalCount.count) {
-                    return maxMatchRightDiagonalCount;
-                } else {
-                    return maxMatchLeftDiagonalCount;
-                }
+    private static List<PairLineCount> aiChooseLine() {
 
+        List<PairLineCount> pairLineCountList = new ArrayList<>();
+        pairLineCountList.add(maxMatchHorizontalCount);
+        pairLineCountList.add(maxMatchVerticalCount);
+        pairLineCountList.add(maxMatchRightDiagonalCount);
+        pairLineCountList.add(maxMatchLeftDiagonalCount);
+        Collections.sort(pairLineCountList, Collections.reverseOrder());
+
+        return pairLineCountList;
 
     }
 
-    public static void aiGetXY(PairLineCount pairLineCount) {
-        if (pairLineCount.lineDirection ==LineEnum.horizontal) {
-            for (int i = 0; i < map.length; i++) {
-                if (isCellValid(i, pairLineCount.line)) {
-                    aiPrintStep(i, pairLineCount.line);
-                    break;
-                }
-            }
-        } else if (pairLineCount.lineDirection ==LineEnum.vertical) {
-            for (int i = 0; i < map.length; i++) {
+    private static void aiGetXY(List<PairLineCount> pairLineCountList) {
 
-                if (isCellValid(pairLineCount.line, i)) {
-                    aiPrintStep(pairLineCount.line, i);
-                    break;
-                }
-            }
-        } else if (pairLineCount.lineDirection ==LineEnum.rightDiagonal) {
-
-            for (int i = 0; i < map.length; i++) {
-                for (int j = 0; j < map.length; j++) {
-                    if (i == j) {
-                        if (isCellValid(i, j)) {
-                            aiPrintStep(i, j);
-                            i = map.length;
-                            break;
-
-                        }
+        for (PairLineCount pairLineCount : pairLineCountList) {
+            if (pairLineCount.lineDirection == LineEnum.horizontal) {
+                for (int i = 0; i < map.length; i++) {
+                    if (isCellValid(i, pairLineCount.line)) {
+                        aiPrintStep(i, pairLineCount.line);
+                        return;
                     }
-
                 }
-            }
-
-        } else if (pairLineCount.lineDirection ==LineEnum.leftDiagonal) {
-
-            for (int i = 0; i < map.length; i++) {
-                for (int j = 0; j < map.length; j++) {
-                    if (i == map.length-2-j) {
-                        if (isCellValid(i, map.length-2-j)) {
-                            aiPrintStep(i, map.length-2-j);
-                            i = map.length;
-                            break;
-
-                        }
+            } else if (pairLineCount.lineDirection == LineEnum.vertical) {
+                for (int i = 0; i < map.length; i++) {
+                    if (isCellValid(pairLineCount.line, i)) {
+                        aiPrintStep(pairLineCount.line, i);
+                        return;
                     }
-
                 }
-            }
+            } else if (pairLineCount.lineDirection == LineEnum.rightDiagonal) {
 
-        } else {
-            int x, y;
-            do {
-                x = rand.nextInt(SIZE);
-                y = rand.nextInt(SIZE);
-            } while (!isCellValid(x, y));
-            aiPrintStep(x, y);
+                for (int i = 0; i < map.length; i++) {
+                    for (int j = 0; j < map.length; j++) {
+                        if (i == j) {
+                            if (isCellValid(i, j)) {
+                                aiPrintStep(i, j);
+                                return;
+
+                            }
+                        }
+
+                    }
+                }
+
+            } else if (pairLineCount.lineDirection == LineEnum.leftDiagonal) {
+
+                for (int i = 0; i < map.length; i++) {
+                    for (int j = 0; j < map.length; j++) {
+                        if (i == map.length - 1 - j) {
+                            if (isCellValid(i, map.length - 1 - j)) {
+                                aiPrintStep(i, map.length - 1 - j);
+                                return;
+                            }
+                        }
+
+                    }
+                }
+
+            }
         }
-
+        int x, y;
+        do {
+            x = rand.nextInt(SIZE);
+            y = rand.nextInt(SIZE);
+        } while (!isCellValid(x, y));
+        aiPrintStep(x, y);
 
 
     }
 
-    public static void aiPrintStep(int x, int y) {
+    private static void aiPrintStep(int x, int y) {
 
         System.out.println("Компьютер походил в точку " + (x + 1) + " " + (y + 1));
         map[y][x] = DOT_O;

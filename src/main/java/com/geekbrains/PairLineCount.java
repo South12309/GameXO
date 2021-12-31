@@ -1,6 +1,6 @@
 package com.geekbrains;
 
-public class PairLineCount {
+public class PairLineCount implements Comparable<PairLineCount> {
     public int line;
     public int count;
     public LineEnum lineDirection;
@@ -15,4 +15,8 @@ public class PairLineCount {
         this.lineDirection =horizontal;
     }
 
+    @Override
+    public int compareTo(PairLineCount o) {
+        return this.count-o.count;
+    }
 }
