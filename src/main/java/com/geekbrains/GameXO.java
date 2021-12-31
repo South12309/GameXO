@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class GameXO {
     public static int SIZE = 4;
-    public static int DOTS_TO_WIN = 3;
+    public static int DOTS_TO_WIN = 4;
     public static final char DOT_EMPTY = '•';
     public static final char DOT_X = 'X';
     public static final char DOT_O = 'O';
@@ -124,17 +124,17 @@ public class GameXO {
         return true;
     }
 
-    public static void aiChooseLine() {
+    public static PairLineCount aiChooseLine() {
         if (maxMatchHorizontalCount.count>maxMatchVerticalCount.count && maxMatchHorizontalCount.count>maxMatchRightDiagonalCount.count && maxMatchHorizontalCount.count>maxMatchLeftDiagonalCount.count) {
-            aiGetXY(maxMatchHorizontalCount);
+            return maxMatchHorizontalCount;
         } else
             if (maxMatchVerticalCount.count>maxMatchHorizontalCount.count && maxMatchVerticalCount.count>maxMatchRightDiagonalCount.count && maxMatchVerticalCount.count>maxMatchLeftDiagonalCount.count) {
-                aiGetXY(maxMatchVerticalCount);
+                return maxMatchVerticalCount;
             } else
                 if (maxMatchRightDiagonalCount.count>maxMatchVerticalCount.count && maxMatchRightDiagonalCount.count>maxMatchHorizontalCount.count && maxMatchRightDiagonalCount.count>maxMatchLeftDiagonalCount.count) {
-                    aiGetXY(maxMatchRightDiagonalCount);
+                    return maxMatchRightDiagonalCount;
                 } else {
-                    aiGetXY(maxMatchLeftDiagonalCount);
+                    return maxMatchLeftDiagonalCount;
                 }
 
 
@@ -143,15 +143,16 @@ public class GameXO {
     public static void aiGetXY(PairLineCount pairLineCount) {
         if (pairLineCount.lineDirection ==LineEnum.horizontal) {
             for (int i = 0; i < map.length; i++) {
-                if (isCellValid(pairLineCount.line, i)) {
-                    aiTurn(pairLineCount.line, i);
+                if (isCellValid(i, pairLineCount.line)) {
+                    aiPrintStep(i, pairLineCount.line);
                     break;
                 }
             }
         } else if (pairLineCount.lineDirection ==LineEnum.vertical) {
             for (int i = 0; i < map.length; i++) {
-                if (isCellValid(i, pairLineCount.line)) {
-                    aiTurn(i, pairLineCount.line);
+
+                if (isCellValid(pairLineCount.line, i)) {
+                    aiPrintStep(pairLineCount.line, i);
                     break;
                 }
             }
@@ -161,7 +162,7 @@ public class GameXO {
                 for (int j = 0; j < map.length; j++) {
                     if (i == j) {
                         if (isCellValid(i, j)) {
-                            aiTurn(i, j);
+                            aiPrintStep(i, j);
                             i = map.length;
                             break;
 
@@ -177,7 +178,7 @@ public class GameXO {
                 for (int j = 0; j < map.length; j++) {
                     if (i == map.length-2-j) {
                         if (isCellValid(i, map.length-2-j)) {
-                            aiTurn(i, map.length-2-j);
+                            aiPrintStep(i, map.length-2-j);
                             i = map.length;
                             break;
 
@@ -193,17 +194,21 @@ public class GameXO {
                 x = rand.nextInt(SIZE);
                 y = rand.nextInt(SIZE);
             } while (!isCellValid(x, y));
-            aiTurn(x, y);
+            aiPrintStep(x, y);
         }
 
 
 
     }
 
-    public static void aiTurn(int x, int y) {
+    public static void aiPrintStep(int x, int y) {
 
         System.out.println("Компьютер походил в точку " + (x + 1) + " " + (y + 1));
         map[y][x] = DOT_O;
+    }
+
+    public static void aiTurn() {
+        aiGetXY(aiChooseLine());
     }
 
     public static void humanTurn() {
